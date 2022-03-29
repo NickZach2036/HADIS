@@ -1,2 +1,2 @@
 # HADIS
-game hunt space duck
+Duckliens Hunt
