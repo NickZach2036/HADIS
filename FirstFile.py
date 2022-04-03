@@ -9,6 +9,8 @@ WIGHT, HEIGHT = 1250,750
 pygame.init()
 
 screen = pygame.display.set_mode([WIGHT, HEIGHT])
+LOGO = pygame.image.load(os.path.join('Game pixel art', 'logo.png'))
+pygame.display.set_icon(LOGO)
 pygame.display.set_caption("HADIS")
 
 DuckX = 100
