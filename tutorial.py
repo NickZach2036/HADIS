@@ -23,10 +23,15 @@ BACKGROUND_IMAGE = pygame.image.load(
 def draw_window():
     WIN.fill(WHITE) #Задава се цвета на фона да е като цвета на променливата, отново като при ред 5;
     WIN.blit(BACKGROUND_IMAGE, (0, 0))
-    WIN.blit(YELLOW_DUCK_IMAGE, (WIDTH/2, HEIGHT/2))
-    #WIN.blit(GREEN_DUCK_IMAGE, (GREEN_DUCK_IMAGEInfo.x, GREEN_DUCK_IMAGEInfo.y))
-    WIN.blit(BLUE_DUCK_IMAGE, (100, 200))
-    WIN.blit(BIG_KAMAK_IMAGE, (WIDTH/1.5, 0))
+    pygame.time.delay(20)
+    BIG_YELLOW_DUCK = pygame.transform.scale(YELLOW_DUCK_IMAGE, (150, 150))
+    WIN.blit(BIG_YELLOW_DUCK, (WIDTH/2, HEIGHT/2))
+    BIG_GREEN_DUCK = pygame.transform.scale(GREEN_DUCK_IMAGE, (100, 100))
+    WIN.blit(BIG_GREEN_DUCK, (350, 300))
+    BIG_BLUE_DUCK = pygame.transform.scale(BLUE_DUCK_IMAGE, (75, 75))
+    WIN.blit(BIG_BLUE_DUCK, (100, 200))
+    BIG_BOULDER = pygame.transform.scale(BIG_KAMAK_IMAGE, (400, 400))
+    WIN.blit(BIG_BOULDER, (WIDTH/1.5, 0))
     pygame.display.update() #Ъпдейтва дисплея след всяка промяна, иначе нищо няма да се покаже;
 
 
