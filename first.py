@@ -46,11 +46,9 @@ while running:
     WIN.blit(CURSOR, (MX-3,MY-3))
     pygame.mouse.set_visible(False)
 
-    #if (DuckX>(WIDTH+100)): DuckX = -100
+    if (DuckX>(WIDTH+100)): DuckX = -100
 
-   # DUCK_COPY = pygame.transform.rotate(BIG_DUCK, angle)
-   # WIN.blit (DUCK_COPY, (DuckX - int(DUCK_COPY.get_width() / 2) , DuckY - int(DUCK_COPY.get_height() / 2)))
-    DUCK = pygame.transform.rotate(DUCK, angle)
+    #DUCK = pygame.transform.rotate(DUCK, angle)
     #WIN.blit (CURSOR, (DuckX+70,DuckY+10))
 
     if(mouse_on(MX,MY,DuckX,DuckY)):
@@ -61,11 +59,12 @@ while running:
         DuckY = MY-18
         WIN.blit(CAUGHT,(DuckX,DuckY))
     else:
-        WIN.blit(DUCK,(DuckX,DuckY))
+        DUCK_COPY = pygame.transform.rotate(DUCK, angle)
+        WIN.blit (DUCK_COPY, (DuckX - int(DUCK_COPY.get_width() / 2) , DuckY - int(DUCK_COPY.get_height() / 2)))
 
 
 
-   # angle = angle + 3
+    angle = angle + 3
 
     DuckX = DuckX + 3
     DuckY = DuckY
