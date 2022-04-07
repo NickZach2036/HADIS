@@ -12,7 +12,7 @@ CURSOR = pygame.image.load(os.path.join('images', 'lazerPointTransparent.png'))
 
 WIDTH, HEIGHT = 1250,750
 space = pymunk.Space()
-space.gravity = 500,0
+#space.gravity = 1000,10
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
@@ -21,8 +21,9 @@ class Duck:
         self.space = space
         self.body = pymunk.Body(1, 100, body_type = pymunk.Body.DYNAMIC)
         self.body.position = pos
-        self.poly_dims = [(65, 20), (75, 20), (90, 70), (75, 95), (20, 95), (0, 70)]
+        self.poly_dims = [(65, 20), (75, 20), (90, 60), (90, 85), (75, 95), (20, 95), (0, 70)]
         self.shape = pymunk.Poly(self.body,self.poly_dims)
+        self.body.velocity = (400, 0)
         self.shape.elasticity = 1
         self.space.add(self.body,self.shape)
 

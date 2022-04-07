@@ -13,7 +13,7 @@ draw_options = pymunk.pygame_util.DrawOptions(screen)
 def create_duck1(space, pos):
     body = pymunk.Body(1, 100, body_type= pymunk.Body.DYNAMIC)
     body.position = pos
-    poly_dims = [(65, 20), (75, 20), (90, 70), (75, 95), (20, 95), (0, 70)]
+    poly_dims = [(65, 20), (75, 20), (90, 60), (90, 85), (75, 95), (20, 95), (0, 70)]
     shape = pymunk.Poly(body,poly_dims)
     space.add(body,shape)
     return shape
@@ -26,7 +26,7 @@ def draw_ducks(ducks):
 
 
 space = pymunk.Space()
-space.gravity = (500, 200)
+space.gravity = (0, 0)
 
 ducks = []
 ducks.append(create_duck1(space, (100, 100)))
