@@ -23,7 +23,7 @@ class Duck:
         self.body.position = pos
         self.poly_dims = [(65, 20), (75, 20), (90, 60), (90, 85), (75, 95), (20, 95), (0, 70)]
         self.shape = pymunk.Poly(self.body,self.poly_dims)
-        self.body.velocity = (400, 0)
+        self.body.velocity = (100, 0)
         self.shape.elasticity = 1
         self.space.add(self.body,self.shape)
 
@@ -100,7 +100,7 @@ def activeDucks(ducks):
 
 ducks = []
 
-for i in range(15):
+for i in range(1):
     duck1=Duck(space, ( (WIDTH+300), (HEIGHT+300) ) )
     ducks.append(duck1)
 
