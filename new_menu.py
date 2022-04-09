@@ -57,6 +57,11 @@ def start_the_game():
             self.shape.elasticity = 1
             self.space.add(self.body, self.shape)
 
+            self.antena_dims = [(5, -55), (30,-55), (30,-30), (5,-30)]
+            self.antenaShape = pymunk.Poly(self.body, self.antena_dims)
+            self.antenaShape.filter = pymunk.ShapeFilter(group=1)
+            self.space.add(self.antenaShape)
+
             self.hooked = False
 
             self.active = False
@@ -78,6 +83,7 @@ def start_the_game():
         body.position = pos
         shape = pymunk.Circle(body, 3)
         shape.elasticity = 1
+        shape.filter = pymunk.ShapeFilter(group=1)
         space.add(body, shape)
         return shape
 
@@ -95,21 +101,12 @@ def start_the_game():
 
         return shape
 
-    def mouse_on(MX, MY, x, y):
-        ok = False
-        if (MX >= x + 60):
-            if (MX <= x + 77):
-                if (MY >= y - 4):
-                    if (MY <= y + 17):
-                        ok = True
-        return ok
-
     def hookCheck(ducks, MX, MY):
         hooked = False
         for duck in ducks:
             x = duck.body.position.x
             y = duck.body.position.y
-            if mouse_on(MX, MY, x, y):
+            if ((duck.antenaShape.shapes_collide(Lazer)).points != [] ):
                 duck.active = False
                 duck.hooked = True
                 hooked = True
