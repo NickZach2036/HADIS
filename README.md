@@ -1,8 +1,8 @@
 # HADIS - Hook A Duck In Space
 
-![Лого](HADIS/images/logo.png)
-![Тъмбнейл на видеото в YouTube](HADIS/HADIS_video-thumbnail.png)
-![Кадър от видеото с името и логото на играта](HADIS/HADIS_video-screenshot.png)
+![Лого](Himages/logo.png)
+![Тъмбнейл на видеото в YouTube](HADIS_video-thumbnail.png)
+![Кадър от видеото с името и логото на играта](HADIS_video-screenshot.png)
 ![Screenshot на играта]()
 ![Screenshot на менюто]()
 
@@ -44,5 +44,5 @@ HADIS/HADIS_presentation.pptx
 
 ## Информация за авторите на проекта (задължително)
 
-**Димитър Грозев** - *програмист* - Hlebaria (https://github.com/Hlebaria)
-**Николай Захариев** - *дизайнер* - NickZach2036 (https://github.com/NickZach2036)
+**Димитър Грозев** - Hlebaria (https://github.com/Hlebaria)
+**Николай Захариев** - NickZach2036 (https://github.com/NickZach2036)
