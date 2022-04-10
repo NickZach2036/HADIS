@@ -1,0 +1,5 @@
+90, OPA
+90, DOG
+80, GIP
+70, POP
+50, LOK
