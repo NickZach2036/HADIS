@@ -1,5 +1,0 @@
-90, OPA
-90, DOG
-70, POP
-50, LOK
-40, FIN

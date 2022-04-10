@@ -11,7 +11,12 @@ pygame.init()
 
 WIDTH, HEIGHT = 1250, 750
 
-SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
+BACKGROUND = pygame.image.load(os.path.join('images', 'BIGGERSpace.png'))
+
+TEXT = pygame.image.load(os.path.join('images', 'about.png'))
+TEXT = pygame.transform.scale(TEXT, (1250, 750))
 
 LOGO = pygame.image.load(os.path.join('images', 'logo.png'))
 pygame.display.set_icon(LOGO)
@@ -28,7 +33,6 @@ def music(VALUE, MUSIC):
 def start_the_game():
     import pygame, pymunk, os, random
 
-    BACKGROUND = pygame.image.load(os.path.join('images', 'BIGGERSpace.png'))
     BASKET = pygame.image.load(os.path.join('images', 'CatchBasketT.png'))
     OVERBASKET = pygame.image.load(os.path.join('images', 'OverBasket.png'))
 
@@ -44,7 +48,6 @@ def start_the_game():
     BACKTOMENU = pygame.transform.scale(BACKTOMENU, (150,50))
 
     space = pymunk.Space()
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
     font = pygame.font.Font('SofiaSanswdthwght.ttf',32)
     spawnTime = 0
@@ -327,7 +330,16 @@ def start_the_game():
         clock.tick(120)
 
 def about_page():
-    # Do the job here !
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        screen.blit(BACKGROUND, (0, 0))
+        screen.blit(TEXT, (0, 0))
+
+        pygame.display.update()
     pass
 
 MENU = pygame_menu.Menu('HADIS', WIDTH/1.5, HEIGHT/1.5, theme=pygame_menu.themes.THEME_DARK)
@@ -337,6 +349,6 @@ MENU.add.selector('Music: ', [('Off', False), ('On', True)], onchange=music)
 MENU.add.button('About the game', about_page)
 MENU.add.button('Quit', pygame_menu.events.EXIT)
 
-MENU.mainloop(SCREEN)
+MENU.mainloop(screen)
 
 pygame.display.update()
