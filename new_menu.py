@@ -1,8 +1,11 @@
+from dis import Instruction
+from tracemalloc import start
 import pygame
 import pygame_menu
 import pymunk
 import os
 import time
+from datetime import date, datetime
 
 pygame.init()
 
@@ -13,10 +16,6 @@ SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 LOGO = pygame.image.load(os.path.join('images', 'logo.png'))
 pygame.display.set_icon(LOGO)
 pygame.display.set_caption("HADIS")
-
-HADIStheme = pygame_menu.themes.THEME_DARK.copy()
-BACKGROUND = pygame_menu.baseimage.BaseImage(image_path=os.path.join('images', 'BIGGERSpace.png'), drawing_mode=pygame_menu.baseimage.IMAGE_MODE_FILL)
-HADIStheme.background_color = BACKGROUND
 
 def music(VALUE, MUSIC):
     if MUSIC:
@@ -41,10 +40,14 @@ def start_the_game():
 
     CURSOR = pygame.image.load(os.path.join('images', 'lazerPointTransparent.png'))
 
+    BACKTOMENU = pygame.image.load(os.path.join('images', 'backToMenu.png'))
+    BACKTOMENU = pygame.transform.scale(BACKTOMENU, (150,50))
+
     space = pymunk.Space()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
     font = pygame.font.Font('SofiaSanswdthwght.ttf',32)
+    spawnTime = 0
 
     class Duck:
         def __init__(self, space, pos):
@@ -101,7 +104,7 @@ def start_the_game():
 
         return shape
 
-    def hookCheck(ducks, MX, MY):
+    def hookCheck(ducks):
         hooked = False
         for duck in ducks:
             x = duck.body.position.x
@@ -121,15 +124,20 @@ def start_the_game():
                 duck.active = False
         return ducks
 
-    def activeDucks(ducks):
+    def activeDucks(ducks,sec):
         activeCurrently = 0
         for duck in ducks:
             if (duck.active):
                 activeCurrently = activeCurrently + 1
 
         done = True
+        max = -1
+        max += sec
+        if(max>10):
+            max = 10
 
-        if (activeCurrently < 10):
+
+        if (activeCurrently < max):
             for duck in ducks:
                 if done:
                     if (duck.active == False):
@@ -140,6 +148,7 @@ def start_the_game():
                         duck.body.angle = 0
                         duck.body.rotational_vector = (1.0, 0.0)
                         done = False
+
         return ducks
 
     def getPoints(ducks):
@@ -151,8 +160,39 @@ def start_the_game():
         return points
 
     def showScore(points,x,y):
-        score = font.render(str(points), True, (255,255,51))
+        score = font.render("Score: " + str(points), True, (255,255,51))
         screen.blit(score, (x,y))
+        
+    def showTimeLeft(sec):
+        sec = 60 - sec
+        secs = font.render(str(sec), True, (255,0,0))
+        screen.blit(secs, (WIDTH-50,10))
+
+    def writeScore(score,name):
+        score = str(score)
+        run = [score, name]
+
+        Masiv = []
+
+        with open ("top5.txt", "r") as textFile:
+            for line in textFile:
+                info = [ item.strip() for item in line.split(',')]
+                Masiv.append(info)
+
+        Masiv.append(run)
+        Masiv.sort(reverse=True)
+        top5 = str(Masiv[:5])
+
+        f = open('top5.txt', 'w')
+        i = 0
+        while(i<5):
+            f.write(Masiv[i][0])
+            f.write(", ")
+            f.write(Masiv[i][1])
+            f.write("\n")
+            i += 1
+        print(top5)
+        f.close()
 
 
     pygame.init()
@@ -167,11 +207,13 @@ def start_the_game():
 
     hooked = False
     points = 0
-
-    currentTime = 0
-    gameStart = 0
-
     countDown = 3
+
+    currentTime = datetime.now()
+    oneTimeVariable = True
+    runOngoing = True
+
+    userName = ''
 
     running = True
     while running:
@@ -179,37 +221,42 @@ def start_the_game():
             if event.type == pygame.QUIT:
                 running = False
 
-        currentTime = pygame.time.get_ticks()
+        currentTime = datetime.now()
 
         pygame.mouse.set_visible(False)
 
         screen.fill((0, 0, 0))
         screen.blit(BACKGROUND, (0, 0))
 
-        if(countDown > 0):
+        if(countDown >= 0):
             count = font.render(str(countDown), True, (255,0,0))
             screen.blit(count, (WIDTH/2, HEIGHT/2))
 
             time.sleep(1)
             countDown -= 1
-            if (countDown == 0):
-                gameStart = pygame.time.get_ticks()
 
-        else: 
-            #leftTime = 60 - ((currentTime - gameStart) - (currentTime - gameStart)%1000)
-            #if(leftTime > 0):
+        else:
+            if(runOngoing): 
                 MX, MY = pygame.mouse.get_pos()
                 MX = MX - 3
                 MY = MY - 3
                 Lazer.body.position = (MX, MY)
                 CursorDraw(Lazer)
 
-                if (hookCheck(ducks, MX, MY)):
-                    hooked = True
+                if oneTimeVariable:
+                    startTime = datetime.now()
+                    oneTimeVariable = False
+                    
+                diff = currentTime - startTime
+                sec = diff.seconds
+
+                if(hooked == False):
+                    if (hookCheck(ducks)):
+                        hooked = True
 
                 ducks = outOfBoundsCheck(ducks)
 
-                ducks = activeDucks(ducks)
+                ducks = activeDucks(ducks, sec)
 
                 draw_ducks(ducks)
 
@@ -225,29 +272,65 @@ def start_the_game():
                         duckpp = getPoints(ducks)
                         points += duckpp
 
-                # make the ilusion that the duck goes into the ship
+                    # make the ilusion that the duck goes into the ship
                 screen.blit(OVERBASKET, (0, HEIGHT - 12))
 
                 showScore(points,10,10)
+
+                showTimeLeft(sec)
+
+                if(20-sec==0):
+                    runOngoing= False
+            else:
+                pygame.draw.rect(screen, (105,105,105), [200,100,WIDTH-400,HEIGHT-200])
+                pygame.draw.rect(screen, (0,0,0), [570,390,80,55])
+                showScore(points, 560, 200)
+                screen.blit(BACKTOMENU, (540, 500))
+
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_BACKSPACE:
+                            userName = userName[:-1]
+                        else: 
+                            userName += event.unicode
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if(MX>=540):
+                            if(MX<=690):
+                                if(MY>=500):
+                                    if(MY<=550):
+                                        writeScore(points,userName)
+                                        running = False
+
+
+
+                if(len(userName)>3):
+                    userName = userName[:3]
+
+                instructions = "Type your initials here:"
+                instuctionsText = font.render(instructions, True, (0,0,0))
+                screen.blit(instuctionsText,(460,300))
+                name = font.render(userName, True, (255,255,255))
+                screen.blit(name,(580,400))
+                MX, MY = pygame.mouse.get_pos()
+                MX = MX - 3
+                MY = MY - 3
+
+
+                Lazer.body.position = (MX, MY)
+                CursorDraw(Lazer)
+
 
         space.step(1 / 50)
         pygame.display.update()
         clock.tick(120)
 
-
-#MAX = 13
-#SCORE = 31
-
-"""def highest_score():
-    if (SCORE > MAX):
-        MAX = SCORE
-    return MAX"""
-
 def about_page():
     # Do the job here !
     pass
 
-MENU = pygame_menu.Menu('HADIS', WIDTH/2, HEIGHT/2, theme=pygame_menu.themes.THEME_DARK)
+MENU = pygame_menu.Menu('HADIS', WIDTH/1.5, HEIGHT/1.5, theme=pygame_menu.themes.THEME_DARK)
 MENU.add.button('Play', start_the_game)
 MENU.add.selector('Music: ', [('Off', False), ('On', True)], onchange=music)
 #MENU.add.button('Highest Score', highest_score)
@@ -255,3 +338,5 @@ MENU.add.button('About the game', about_page)
 MENU.add.button('Quit', pygame_menu.events.EXIT)
 
 MENU.mainloop(SCREEN)
+
+pygame.display.update()
