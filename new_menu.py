@@ -2,11 +2,12 @@ import pygame
 import pygame_menu
 import pymunk
 import os
+import time
 
 pygame.init()
 
-WIDTH = 1366
-HEIGHT = 708
+WIDTH, HEIGHT = 1250, 750
+
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 
 LOGO = pygame.image.load(os.path.join('images', 'logo.png'))
@@ -19,7 +20,7 @@ HADIStheme.background_color = BACKGROUND
 
 def music(VALUE, MUSIC):
     if MUSIC:
-        pygame.mixer.music.load('Mahalageasca (Bucovina Dub).mp3')
+        pygame.mixer.music.load('Mahalageasca_Bucovina_Dub.mp3')
         pygame.mixer.music.play(-1)
         pygame.mixer.music.set_volume(0.12)
     else:
@@ -40,22 +41,26 @@ def start_the_game():
 
     CURSOR = pygame.image.load(os.path.join('images', 'lazerPointTransparent.png'))
 
-    WIDTH, HEIGHT = 1250, 750
     space = pymunk.Space()
-    # space.gravity = 1000,10
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
+    font = pygame.font.Font('SofiaSanswdthwght.ttf',32)
 
     class Duck:
         def __init__(self, space, pos):
             self.space = space
             self.body = pymunk.Body(1, 100, body_type=pymunk.Body.DYNAMIC)
             self.body.position = pos
-            self.poly_dims = [(65, 20), (75, 20), (90, 60), (90, 85), (75, 95), (20, 95), (0, 70)]
+            self.poly_dims = [(15, -30), (25, -30), (40, 15), (40, 35), (30, 45), (-25, 45), (-45, 15)]
             self.shape = pymunk.Poly(self.body, self.poly_dims)
             self.body.velocity = (400, 0)
             self.shape.elasticity = 1
             self.space.add(self.body, self.shape)
+
+            self.antena_dims = [(5, -55), (30,-55), (30,-30), (5,-30)]
+            self.antenaShape = pymunk.Poly(self.body, self.antena_dims)
+            self.antenaShape.filter = pymunk.ShapeFilter(group=1)
+            self.space.add(self.antenaShape)
 
             self.hooked = False
 
@@ -68,20 +73,24 @@ def start_the_game():
             if duck.active:
                 pos_x = int(duck.body.position.x)
                 pos_y = int(duck.body.position.y)
-                screen.blit(DUCK, (pos_x, pos_y))
+
+                #rotate the duck and convert radians into degrees
+                DUCK_COPY = pygame.transform.rotate(DUCK, (-duck.body.angle*57.2958))
+                screen.blit (DUCK_COPY, (pos_x - int(DUCK_COPY.get_width() / 2) , pos_y - int(DUCK_COPY.get_height() / 2)))
 
     def Cursor(space, pos):
         body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
         body.position = pos
-        shape = pymunk.Circle(body, 50)
+        shape = pymunk.Circle(body, 3)
         shape.elasticity = 1
+        shape.filter = pymunk.ShapeFilter(group=1)
         space.add(body, shape)
         return shape
 
     def CursorDraw(cursor):
         pos_x = int(cursor.body.position.x)
         pos_y = int(cursor.body.position.y)
-        screen.blit(CURSOR, (pos_x, pos_y))
+        screen.blit(CURSOR, (pos_x - 3, pos_y - 3))
 
     def Caught(space):
         body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
@@ -92,21 +101,12 @@ def start_the_game():
 
         return shape
 
-    def mouse_on(MX, MY, x, y):
-        ok = False
-        if (MX >= x + 60):
-            if (MX <= x + 77):
-                if (MY >= y - 4):
-                    if (MY <= y + 17):
-                        ok = True
-        return ok
-
     def hookCheck(ducks, MX, MY):
         hooked = False
         for duck in ducks:
             x = duck.body.position.x
             y = duck.body.position.y
-            if mouse_on(MX, MY, x, y):
+            if ((duck.antenaShape.shapes_collide(Lazer)).points != [] ):
                 duck.active = False
                 duck.hooked = True
                 hooked = True
@@ -137,6 +137,8 @@ def start_the_game():
                         pos = ((-100), (random.uniform(50, (HEIGHT - 100))))
                         duck.body.position = pos
                         duck.body.velocity = (400, 0)
+                        duck.body.angle = 0
+                        duck.body.rotational_vector = (1.0, 0.0)
                         done = False
         return ducks
 
@@ -148,20 +150,28 @@ def start_the_game():
                 points = duck.points
         return points
 
-    ducks = []
+    def showScore(points,x,y):
+        score = font.render(str(points), True, (255,255,51))
+        screen.blit(score, (x,y))
 
+
+    pygame.init()
+    
+    ducks = []
     for i in range(15):
         duck1 = Duck(space, ((WIDTH + 300), (HEIGHT + 300)))
         ducks.append(duck1)
 
+    Lazer = Cursor(space, (0, 0))
+    caught = Caught(space)
+
     hooked = False
     points = 0
 
-    caught = Caught(space)
+    currentTime = 0
+    gameStart = 0
 
-    pygame.init()
-
-    Lazer = Cursor(space, (0, 0))
+    countDown = 3
 
     running = True
     while running:
@@ -169,42 +179,56 @@ def start_the_game():
             if event.type == pygame.QUIT:
                 running = False
 
+        currentTime = pygame.time.get_ticks()
+
         pygame.mouse.set_visible(False)
 
         screen.fill((0, 0, 0))
         screen.blit(BACKGROUND, (0, 0))
 
-        MX, MY = pygame.mouse.get_pos()
-        MX = MX - 3
-        MY = MY - 3
-        Lazer.body.position = (MX, MY)
+        if(countDown > 0):
+            count = font.render(str(countDown), True, (255,0,0))
+            screen.blit(count, (WIDTH/2, HEIGHT/2))
 
-        if (hookCheck(ducks, MX, MY)):
-            hooked = True
+            time.sleep(1)
+            countDown -= 1
+            if (countDown == 0):
+                gameStart = pygame.time.get_ticks()
 
-        ducks = outOfBoundsCheck(ducks)
+        else: 
+            #leftTime = 60 - ((currentTime - gameStart) - (currentTime - gameStart)%1000)
+            #if(leftTime > 0):
+                MX, MY = pygame.mouse.get_pos()
+                MX = MX - 3
+                MY = MY - 3
+                Lazer.body.position = (MX, MY)
+                CursorDraw(Lazer)
 
-        ducks = activeDucks(ducks)
+                if (hookCheck(ducks, MX, MY)):
+                    hooked = True
 
-        draw_ducks(ducks)
+                ducks = outOfBoundsCheck(ducks)
 
-        screen.blit(BASKET, (0, 300))
+                ducks = activeDucks(ducks)
 
-        if (hooked):
-            DuckX = MX - 87
-            DuckY = MY - 18
-            caught.body.position = (DuckX, DuckY)
-            screen.blit(CAUGHT, (DuckX, DuckY))
-            if (DuckY > 650):
-                hooked = False
-                duckpp = getPoints(ducks)
-                points += duckpp
-                print(points)
+                draw_ducks(ducks)
 
-        # make the ilusion that the duck goes into the ship
-        screen.blit(OVERBASKET, (0, HEIGHT - 12))
+                screen.blit(BASKET, (0, 300))
 
-        CursorDraw(Lazer)
+                if (hooked):
+                    DuckX = MX - 87
+                    DuckY = MY - 18
+                    caught.body.position = (DuckX, DuckY)
+                    screen.blit(CAUGHT, (DuckX, DuckY))
+                    if (DuckY > 650):
+                        hooked = False
+                        duckpp = getPoints(ducks)
+                        points += duckpp
+
+                # make the ilusion that the duck goes into the ship
+                screen.blit(OVERBASKET, (0, HEIGHT - 12))
+
+                showScore(points,10,10)
 
         space.step(1 / 50)
         pygame.display.update()
