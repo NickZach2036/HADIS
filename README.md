@@ -44,5 +44,5 @@ HADIS/HADIS_presentation.pptx
 
 ## Информация за авторите на проекта
 
-**Димитър Грозев** - Hlebaria (https://github.com/Hlebaria)
-**Николай Захариев** - NickZach2036 (https://github.com/NickZach2036)
+**Димитър Грозев** - Hlebaria (https://github.com/Hlebaria);
+**Николай Захариев** - NickZach2036 (https://github.com/NickZach2036).
