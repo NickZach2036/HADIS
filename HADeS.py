@@ -10,11 +10,19 @@ pygame.init()
 
 WIDTH, HEIGHT = 1250, 750
 
-SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+BACKGROUND = pygame.image.load(os.path.join('images', 'BIGGERSpace.png'))
+screen.blit(BACKGROUND, (0, 0))
 
 LOGO = pygame.image.load(os.path.join('images', 'logo.png'))
 pygame.display.set_icon(LOGO)
 pygame.display.set_caption("HADIS")
+
+font = pygame.font.Font('SofiaSanswdthwght.ttf', 32)
+
+TEXT = pygame.image.load(os.path.join('images', 'about.png'))
+TEXT = pygame.transform.scale(TEXT, (1250, 750))
+
 
 def music(VALUE, MUSIC):
     if MUSIC:
@@ -24,10 +32,10 @@ def music(VALUE, MUSIC):
     else:
         pygame.mixer.music.stop()
 
+
 def start_the_game():
     import pygame, pymunk, os, random
 
-    BACKGROUND = pygame.image.load(os.path.join('images', 'BIGGERSpace.png'))
     BASKET = pygame.image.load(os.path.join('images', 'CatchBasketT.png'))
     OVERBASKET = pygame.image.load(os.path.join('images', 'OverBasket.png'))
 
@@ -40,9 +48,8 @@ def start_the_game():
     CURSOR = pygame.image.load(os.path.join('images', 'lazerPointTransparent.png'))
 
     space = pymunk.Space()
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
     clock = pygame.time.Clock()
-    font = pygame.font.Font('SofiaSanswdthwght.ttf',32)
     spawnTime = 0
 
     class Duck:
@@ -56,7 +63,7 @@ def start_the_game():
             self.shape.elasticity = 1
             self.space.add(self.body, self.shape)
 
-            self.antena_dims = [(5, -55), (30,-55), (30,-30), (5,-30)]
+            self.antena_dims = [(5, -55), (30, -55), (30, -30), (5, -30)]
             self.antenaShape = pymunk.Poly(self.body, self.antena_dims)
             self.antenaShape.filter = pymunk.ShapeFilter(group=1)
             self.space.add(self.antenaShape)
@@ -73,9 +80,10 @@ def start_the_game():
                 pos_x = int(duck.body.position.x)
                 pos_y = int(duck.body.position.y)
 
-                #rotate the duck and convert radians into degrees
-                DUCK_COPY = pygame.transform.rotate(DUCK, (-duck.body.angle*57.2958))
-                screen.blit (DUCK_COPY, (pos_x - int(DUCK_COPY.get_width() / 2) , pos_y - int(DUCK_COPY.get_height() / 2)))
+                # rotate the duck and convert radians into degrees
+                DUCK_COPY = pygame.transform.rotate(DUCK, (-duck.body.angle * 57.2958))
+                screen.blit(DUCK_COPY,
+                            (pos_x - int(DUCK_COPY.get_width() / 2), pos_y - int(DUCK_COPY.get_height() / 2)))
 
     def Cursor(space, pos):
         body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
@@ -105,7 +113,7 @@ def start_the_game():
         for duck in ducks:
             x = duck.body.position.x
             y = duck.body.position.y
-            if ((duck.antenaShape.shapes_collide(Lazer)).points != [] ):
+            if ((duck.antenaShape.shapes_collide(Lazer)).points != []):
                 duck.active = False
                 duck.hooked = True
                 hooked = True
@@ -120,7 +128,7 @@ def start_the_game():
                 duck.active = False
         return ducks
 
-    def activeDucks(ducks,sec):
+    def activeDucks(ducks, sec):
         activeCurrently = 0
         for duck in ducks:
             if (duck.active):
@@ -129,9 +137,8 @@ def start_the_game():
         done = True
         max = -1
         max += sec
-        if(max>10):
+        if (max > 10):
             max = 10
-
 
         if (activeCurrently < max):
             for duck in ducks:
@@ -155,17 +162,43 @@ def start_the_game():
                 points = duck.points
         return points
 
-    def showScore(points,x,y):
-        score = font.render(str(points), True, (255,255,51))
-        screen.blit(score, (x,y))
-        
+    def showScore(points, x, y):
+        score = font.render(str(points), True, (255, 255, 51))
+        screen.blit(score, (x, y))
+
     def showTimeLeft(sec):
         sec = 60 - sec
-        secs = font.render(str(sec), True, (255,0,0))
-        screen.blit(secs, (WIDTH-50,10))
+        secs = font.render(str(sec), True, (255, 0, 0))
+        screen.blit(secs, (WIDTH - 50, 10))
+
+    def writeScore(score, name):
+        score = str(score)
+        run = [score, name]
+
+        Masiv = []
+
+        with open("top5.txt", "r") as textFile:
+            for line in textFile:
+                info = [item.strip() for item in line.split(',')]
+                Masiv.append(info)
+
+        Masiv.append(run)
+        Masiv.sort(reverse=True)
+        top5 = str(Masiv[:5])
+
+        f = open('top5.txt', 'w')
+        i = 0
+        while (i < 5):
+            f.write(Masiv[i][0])
+            f.write(", ")
+            f.write(Masiv[i][1])
+            f.write("\n")
+            i += 1
+        print(top5)
+        f.close()
 
     pygame.init()
-    
+
     ducks = []
     for i in range(15):
         duck1 = Duck(space, ((WIDTH + 300), (HEIGHT + 300)))
@@ -194,19 +227,19 @@ def start_the_game():
         screen.fill((0, 0, 0))
         screen.blit(BACKGROUND, (0, 0))
 
-        if(countDown >= 0):
-            count = font.render(str(countDown), True, (255,0,0))
-            screen.blit(count, (WIDTH/2, HEIGHT/2))
+        if (countDown >= 0):
+            count = font.render(str(countDown), True, (255, 0, 0))
+            screen.blit(count, (WIDTH / 2, HEIGHT / 2))
 
             time.sleep(1)
             countDown -= 1
 
-        else: 
+        else:
 
             if oneTimeVariable:
                 startTime = datetime.now()
                 oneTimeVariable = False
-                
+
             diff = currentTime - startTime
             sec = diff.seconds
 
@@ -216,7 +249,7 @@ def start_the_game():
             Lazer.body.position = (MX, MY)
             CursorDraw(Lazer)
 
-            if(hooked == False):
+            if (hooked == False):
                 if (hookCheck(ducks)):
                     hooked = True
 
@@ -241,7 +274,7 @@ def start_the_game():
                 # make the ilusion that the duck goes into the ship
             screen.blit(OVERBASKET, (0, HEIGHT - 12))
 
-            showScore(points,10,10)
+            showScore(points, 10, 10)
 
             showTimeLeft(sec)
 
@@ -249,17 +282,55 @@ def start_the_game():
         pygame.display.update()
         clock.tick(120)
 
-def about_page():
-    # Do the job here !
-    pass
 
-MENU = pygame_menu.Menu('HADIS', WIDTH/1.5, HEIGHT/1.5, theme=pygame_menu.themes.THEME_DARK)
+def about_page():
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        screen.blit(BACKGROUND, (0, 0))
+        screen.blit(TEXT, (0, 0))
+
+        pygame.display.update()
+
+
+"""def highest_score():
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        screen.blit(BACKGROUND, (0, 0))
+
+        Masiv = []
+
+        with open("top5.txt", "r") as textFile:
+            for line in textFile:
+                info = [item.strip() for item in line.split(',')]
+                Masiv.append(info)
+
+        itr = 1
+
+        while (itr < 6):
+            line = "%d. %s, %s" (itr, Masiv[itr][0], Masiv[itr][1])
+            itr += 1
+
+            line_print = font.render(line, True, (255, 255, 0))
+            screen.blit(line_print, (400, 100 + itr*10))
+
+        pygame.display.update()""""
+
+
+MENU = pygame_menu.Menu('HADIS', WIDTH / 1.5, HEIGHT / 1.5, theme=pygame_menu.themes.THEME_DARK)
 MENU.add.button('Play', start_the_game)
 MENU.add.selector('Music: ', [('Off', False), ('On', True)], onchange=music)
 #MENU.add.button('Highest Score', highest_score)
 MENU.add.button('About the game', about_page)
 MENU.add.button('Quit', pygame_menu.events.EXIT)
 
-MENU.mainloop(SCREEN)
+MENU.mainloop(screen)
 
 pygame.display.update()
