@@ -23,6 +23,7 @@ font = pygame.font.Font('SofiaSanswdthwght.ttf', 32)
 TEXT = pygame.image.load(os.path.join('images', 'about.png'))
 TEXT = pygame.transform.scale(TEXT, (1250, 750))
 
+HIGH_SCORE_BG = pygame.image.load(os.path.join('images', 'HSB.png'))
 
 def music(VALUE, MUSIC):
     if MUSIC:
@@ -295,6 +296,16 @@ def about_page():
 
         pygame.display.update()
 
+def high_score_bg():
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        screen.blit(HIGH_SCORE_BG, (0, 0))
+
+        pygame.display.update()
 
 """def highest_score():
     running = True
@@ -321,13 +332,13 @@ def about_page():
             line_print = font.render(line, True, (255, 255, 0))
             screen.blit(line_print, (400, 100 + itr*10))
 
-        pygame.display.update()""""
+        pygame.display.update()"""
 
 
 MENU = pygame_menu.Menu('HADIS', WIDTH / 1.5, HEIGHT / 1.5, theme=pygame_menu.themes.THEME_DARK)
 MENU.add.button('Play', start_the_game)
 MENU.add.selector('Music: ', [('Off', False), ('On', True)], onchange=music)
-#MENU.add.button('Highest Score', highest_score)
+MENU.add.button('Highest Score', high_score_bg)
 MENU.add.button('About the game', about_page)
 MENU.add.button('Quit', pygame_menu.events.EXIT)
 
