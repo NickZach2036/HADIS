@@ -19,14 +19,17 @@ TEXT = pygame.image.load(os.path.join('images', 'about.png'))
 TEXT = pygame.transform.scale(TEXT, (1250, 750))
 
 HIGH_SCORE_BG = pygame.image.load(os.path.join('images', 'HSB.png'))
+PAUSE = pygame.image.load(os.path.join('images', 'Pause_Menu.jpg'))
 
 font = pygame.font.Font('SofiaSanswdthwght.ttf',32)
+ScoreFont = pygame.font.Font('SofiaSanswdthwght.ttf',54)
+InitialsFont = pygame.font.Font('SofiaSanswdthwght.ttf',48)
 
 LOGO = pygame.image.load(os.path.join('images', 'logo.png'))
 pygame.display.set_icon(LOGO)
 pygame.display.set_caption("HADIS")
 
-def music(MUSIC):
+def music(VALUE, MUSIC):
     if MUSIC:
         pygame.mixer.music.load('Mahalageasca_Bucovina_Dub.mp3')
         pygame.mixer.music.play(-1)
@@ -194,7 +197,7 @@ def start_the_game():
         return points
 
     def showScore(points,x,y):
-        score = font.render("Score: " + str(points), True, (255,255,51))
+        score = font.render(str(points), True, (255,255,51))
         screen.blit(score, (x,y))
         
     def showTimeLeft(sec):
@@ -287,10 +290,8 @@ def start_the_game():
                 if(20-sec==0):
                     runOngoing= False
             else:
-                pygame.draw.rect(screen, (105,105,105), [200,100,WIDTH-400,HEIGHT-200])
-                pygame.draw.rect(screen, (0,0,0), [570,390,80,55])
-                showScore(points, 560, 200)
-                screen.blit(BACKTOMENU, (540, 500))
+                screen.blit(PAUSE, (0, 0))
+                showScore(points, 650, 138)
 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -301,9 +302,9 @@ def start_the_game():
                         else: 
                             userName += event.unicode
                     if event.type == pygame.MOUSEBUTTONDOWN:
-                        if(MX>=540):
-                            if(MX<=690):
-                                if(MY>=500):
+                        if(MX>=200):
+                            if(MX<=1050):
+                                if(MY>=450):
                                     if(MY<=550):
                                         score = str(points)
 
@@ -318,24 +319,35 @@ def start_the_game():
 
                                         running = False
 
+                    '''if event.type == pygame.MOUSEBUTTONDOWN:
+                        if(MX>=675):
+                            if(MX<=1050):
+                                if(MY>=450):
+                                    if(MY<=550):
+                                        score = str(points)
 
+                                        file = open('top5.txt', 'a')
+
+                                        file.write(score)
+                                        file.write(", ")
+                                        file.write(userName)
+                                        file.write("\n")
+
+                                        file.close()
+
+                                        start_the_game()'''
 
                 if(len(userName)>3):
                     userName = userName[:3]
 
-                instructions = "Type your initials here:"
-                instuctionsText = font.render(instructions, True, (0,0,0))
-                screen.blit(instuctionsText,(460,300))
                 name = font.render(userName, True, (255,255,255))
-                screen.blit(name,(580,400))
+                screen.blit(name,(750,313))
                 MX, MY = pygame.mouse.get_pos()
                 MX = MX - 3
                 MY = MY - 3
 
-
                 Lazer.body.position = (MX, MY)
                 CursorDraw(Lazer)
-
 
         space.step(1 / 50)
         pygame.display.update()
