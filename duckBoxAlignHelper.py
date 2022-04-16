@@ -7,6 +7,7 @@ import os
 DUCK = pygame.image.load(os.path.join('images','yellowDuckTransparent.png'))
 DUCK = pygame.transform.scale(DUCK, (100, 100))
 CURSOR = pygame.image.load(os.path.join('images', 'lazerPointTransparent.png'))
+CURSOR = pygame.transform.scale(CURSOR, (14, 14))
 
 pygame.init()
 screen = pygame.display.set_mode((1000, 1000))
@@ -21,8 +22,8 @@ def create_duck1(space, pos):
     body.velocity = (0,0)
     space.add(body,shape)
 
-    antena_dims = [(5, -55), (30,-55), (30,-30), (5,-30)]
-    antenaShape = pymunk.Poly(body, antena_dims)
+    #antena_dims = [(5, -55), (30,-55), (30,-30), (5,-30)]
+    antenaShape = pymunk.Circle(body, 12, (17,-43))
     antenaShape.filter = pymunk.ShapeFilter(group=1)
     space.add(antenaShape)
 
@@ -40,7 +41,7 @@ def draw_ducks(ducks):
 def Cursor(space, pos):
     body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
     body.position = pos
-    shape = pymunk.Circle(body, 3)
+    shape = pymunk.Circle(body, 5)
     shape.elasticity = 1
     shape.filter = pymunk.ShapeFilter(group=1)
     space.add(body, shape)
@@ -49,7 +50,7 @@ def Cursor(space, pos):
 def CursorDraw(cursor):
     pos_x = int(cursor.body.position.x)
     pos_y = int(cursor.body.position.y)
-    screen.blit(CURSOR, (pos_x - 3, pos_y - 3))
+    screen.blit(CURSOR, (pos_x - 7, pos_y - 7))
 
 def offScreenHelpingShape(space):
     body = pymunk.Body(1, 100, body_type= pymunk.Body.DYNAMIC)
@@ -84,6 +85,8 @@ while run:
     if((ducks[0].shapes_collide(Lazer)).points != [] ):
         print('COLLISION!')
 
+
+    #pygame.mouse.set_visible(False)
 
     # \/ \/ \/ To check the hitboxes, uncommet the following piece of code below:
     space.debug_draw(draw_options)
