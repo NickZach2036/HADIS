@@ -284,7 +284,7 @@ def start_the_game():
 
                 showTimeLeft(sec)
 
-                if(20-sec==0):
+                if(10-sec==0):
                     runOngoing= False
             else:
                 pygame.draw.rect(screen, (105,105,105), [200,100,WIDTH-400,HEIGHT-200])
