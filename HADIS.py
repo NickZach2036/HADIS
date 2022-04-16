@@ -1,3 +1,5 @@
+from dis import Instruction
+from tracemalloc import start
 import pygame
 import pygame_menu
 import pymunk
@@ -19,14 +21,13 @@ TEXT = pygame.transform.scale(TEXT, (1250, 750))
 HIGH_SCORE_BG = pygame.image.load(os.path.join('images', 'HSB.png'))
 PAUSE = pygame.image.load(os.path.join('images', 'Pause_Menu.jpg'))
 
-font = pygame.font.Font('SofiaSanswdthwght.ttf', 32)
-ScoreFont = pygame.font.Font('SofiaSanswdthwght.ttf', 54)
-InitialsFont = pygame.font.Font('SofiaSanswdthwght.ttf', 48)
+font = pygame.font.Font('SofiaSanswdthwght.ttf',32)
+ScoreFont = pygame.font.Font('SofiaSanswdthwght.ttf',54)
+InitialsFont = pygame.font.Font('SofiaSanswdthwght.ttf',48)
 
 LOGO = pygame.image.load(os.path.join('images', 'logo.png'))
 pygame.display.set_icon(LOGO)
 pygame.display.set_caption("HADIS")
-
 
 def music(VALUE, MUSIC):
     if MUSIC:
@@ -36,12 +37,11 @@ def music(VALUE, MUSIC):
     else:
         pygame.mixer.music.stop()
 
-
 def high_score_bg():
     Masiv = []
     textFile = open ("top5.txt", "r")
     for line in textFile:
-        info = [item.strip() for item in line.split(',')]
+        info = [ item.strip() for item in line.split(',')]
         Masiv.append(info)
     textFile.close()
 
@@ -66,12 +66,12 @@ def high_score_bg():
             showNumber = i + 1
             number = str(showNumber)
             line = number + '. ' + Masiv[i][1] + ' - ' + Masiv[i][0]
-            print = font.render(line, True, (255, 0, 0))
-            screen.blit(print, (WIDTH / 2.4, 250 + offset))
+            print = font.render(line, True, (255,0,0))
+            screen.blit(print, (WIDTH/2.4,250+offset))
             offset += 35
 
-        pygame.display.update()
 
+        pygame.display.update()
 
 def start_the_game():
     import pygame, pymunk, os, random
@@ -88,6 +88,9 @@ def start_the_game():
     CURSOR = pygame.image.load(os.path.join('images', 'lazerPointTransparent.png'))
     CURSOR = pygame.transform.scale(CURSOR, (14, 14))
 
+    BACKTOMENU = pygame.image.load(os.path.join('images', 'backToMenu.png'))
+    BACKTOMENU = pygame.transform.scale(BACKTOMENU, (150,50))
+
     space = pymunk.Space()
     clock = pygame.time.Clock()
     spawnTime = 0
@@ -103,8 +106,8 @@ def start_the_game():
             self.shape.elasticity = 1
             self.space.add(self.body, self.shape)
 
-            # self.antena_dims = [(5, -55), (30,-55), (30,-30), (5,-30)]
-            self.antenaShape = pymunk.Circle(self.body, 12, (17, -43))
+            #self.antena_dims = [(5, -55), (30,-55), (30,-30), (5,-30)]
+            self.antenaShape = pymunk.Circle(self.body, 12, (17,-43))
             self.antenaShape.filter = pymunk.ShapeFilter(group=1)
             self.space.add(self.antenaShape)
 
@@ -120,10 +123,9 @@ def start_the_game():
                 pos_x = int(duck.body.position.x)
                 pos_y = int(duck.body.position.y)
 
-                # rotate the duck and convert radians into degrees
-                DUCK_COPY = pygame.transform.rotate(DUCK, (-duck.body.angle * 57.2958))
-                screen.blit(DUCK_COPY,
-                            (pos_x - int(DUCK_COPY.get_width() / 2), pos_y - int(DUCK_COPY.get_height() / 2)))
+                #rotate the duck and convert radians into degrees
+                DUCK_COPY = pygame.transform.rotate(DUCK, (-duck.body.angle*57.2958))
+                screen.blit (DUCK_COPY, (pos_x - int(DUCK_COPY.get_width() / 2) , pos_y - int(DUCK_COPY.get_height() / 2)))
 
     def Cursor(space, pos):
         body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
@@ -144,7 +146,7 @@ def start_the_game():
         for duck in ducks:
             x = duck.body.position.x
             y = duck.body.position.y
-            if ((duck.antenaShape.shapes_collide(Lazer)).points != []):
+            if ((duck.antenaShape.shapes_collide(Lazer)).points != [] ):
                 duck.active = False
                 duck.hooked = True
                 hooked = True
@@ -159,7 +161,7 @@ def start_the_game():
                 duck.active = False
         return ducks
 
-    def activeDucks(ducks, sec):
+    def activeDucks(ducks,sec):
         activeCurrently = 0
         for duck in ducks:
             if (duck.active):
@@ -168,8 +170,9 @@ def start_the_game():
         done = True
         max = -1
         max += sec
-        if (max > 10):
+        if(max>10):
             max = 10
+
 
         if (activeCurrently < max):
             for duck in ducks:
@@ -193,17 +196,17 @@ def start_the_game():
                 points = duck.points
         return points
 
-    def showScore(points, x, y):
-        score = font.render(str(points), True, (255, 255, 51))
-        screen.blit(score, (x, y))
-
+    def showScore(points,x,y):
+        score = font.render(str(points), True, (255,255,51))
+        screen.blit(score, (x,y))
+        
     def showTimeLeft(sec):
         sec = 60 - sec
-        secs = font.render(str(sec), True, (255, 0, 0))
-        screen.blit(secs, (WIDTH - 50, 10))
+        secs = font.render(str(sec), True, (255,0,0))
+        screen.blit(secs, (WIDTH-50,10))
 
     pygame.init()
-
+    
     ducks = []
     for i in range(15):
         duck1 = Duck(space, ((WIDTH + 300), (HEIGHT + 300)))
@@ -234,15 +237,15 @@ def start_the_game():
         screen.fill((0, 0, 0))
         screen.blit(BACKGROUND, (0, 0))
 
-        if (countDown >= 0):
-            count = font.render(str(countDown), True, (255, 0, 0))
-            screen.blit(count, (WIDTH / 2, HEIGHT / 2))
+        if(countDown >= 0):
+            count = font.render(str(countDown), True, (255,0,0))
+            screen.blit(count, (WIDTH/2, HEIGHT/2))
 
             time.sleep(1)
             countDown -= 1
 
         else:
-            if (runOngoing):
+            if(runOngoing): 
                 MX, MY = pygame.mouse.get_pos()
                 MX = MX - 3
                 MY = MY - 3
@@ -252,11 +255,11 @@ def start_the_game():
                 if oneTimeVariable:
                     startTime = datetime.now()
                     oneTimeVariable = False
-
+                    
                 diff = currentTime - startTime
                 sec = diff.seconds
 
-                if (hooked == False):
+                if(hooked == False):
                     if (hookCheck(ducks)):
                         hooked = True
 
@@ -280,12 +283,12 @@ def start_the_game():
                     # make the ilusion that the duck goes into the ship
                 screen.blit(OVERBASKET, (0, HEIGHT - 12))
 
-                showScore(points, 10, 10)
+                showScore(points,10,10)
 
                 showTimeLeft(sec)
 
-                if (60 - sec == 0):
-                    runOngoing = False
+                if(20-sec==0):
+                    runOngoing= False
             else:
                 screen.blit(PAUSE, (0, 0))
                 showScore(points, 650, 138)
@@ -296,13 +299,13 @@ def start_the_game():
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_BACKSPACE:
                             userName = userName[:-1]
-                        else:
+                        else: 
                             userName += event.unicode
                     if event.type == pygame.MOUSEBUTTONDOWN:
-                        if (MX >= 200):
-                            if (MX <= 1050):
-                                if (MY >= 450):
-                                    if (MY <= 550):
+                        if(MX>=200):
+                            if(MX<=1050):
+                                if(MY>=450):
+                                    if(MY<=550):
                                         score = str(points)
 
                                         file = open('top5.txt', 'a')
@@ -334,11 +337,11 @@ def start_the_game():
 
                                         start_the_game()'''
 
-                if (len(userName) > 3):
+                if(len(userName)>3):
                     userName = userName[:3]
 
-                name = font.render(userName, True, (255, 255, 255))
-                screen.blit(name, (750, 313))
+                name = font.render(userName, True, (255,255,255))
+                screen.blit(name,(750,313))
                 MX, MY = pygame.mouse.get_pos()
                 MX = MX - 3
                 MY = MY - 3
@@ -349,7 +352,6 @@ def start_the_game():
         space.step(1 / 50)
         pygame.display.update()
         clock.tick(120)
-
 
 def about_page():
     running = True
@@ -364,11 +366,10 @@ def about_page():
         pygame.display.update()
     pass
 
-
-MENU = pygame_menu.Menu('HADIS', WIDTH / 1.5, HEIGHT / 1.5, theme=pygame_menu.themes.THEME_DARK)
+MENU = pygame_menu.Menu('HADIS', WIDTH/1.5, HEIGHT/1.5, theme=pygame_menu.themes.THEME_DARK)
 MENU.add.button('Play', start_the_game)
 MENU.add.selector('Music: ', [('Off', False), ('On', True)], onchange=music)
-MENU.add.button('Highest Score', high_score_bg)
+MENU.add.button('Highest Score', high_score_bg) 
 MENU.add.button('About the game', about_page)
 MENU.add.button('Quit', pygame_menu.events.EXIT)
 
