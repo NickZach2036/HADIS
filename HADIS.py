@@ -1,5 +1,3 @@
-from dis import Instruction
-from tracemalloc import start
 import pygame
 import pygame_menu
 import pymunk
@@ -41,7 +39,7 @@ def music(VALUE, MUSIC):
 
 def high_score_bg():
     Masiv = []
-    textFile = open("top5.txt", "r")
+    textFile = open ("top5.txt", "r")
     for line in textFile:
         info = [item.strip() for item in line.split(',')]
         Masiv.append(info)
@@ -370,7 +368,7 @@ def about_page():
 MENU = pygame_menu.Menu('HADIS', WIDTH / 1.5, HEIGHT / 1.5, theme=pygame_menu.themes.THEME_DARK)
 MENU.add.button('Play', start_the_game)
 MENU.add.selector('Music: ', [('Off', False), ('On', True)], onchange=music)
-MENU.add.button('Top Scores', high_score_bg)
+MENU.add.button('Highest Score', high_score_bg)
 MENU.add.button('About the game', about_page)
 MENU.add.button('Quit', pygame_menu.events.EXIT)
 
